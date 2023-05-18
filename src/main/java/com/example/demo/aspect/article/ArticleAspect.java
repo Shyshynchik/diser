@@ -1,8 +1,6 @@
 package com.example.demo.aspect.article;
 
 import com.example.demo.entity.Article;
-import com.example.demo.entity.cashing.redis.LastFiveArticles;
-import com.example.demo.entity.cashing.redis.PopularArticles;
 import com.example.demo.entity.cashing.CashedId;
 import com.example.demo.repositorie.mysql.ArticleRepositoryJpa;
 import com.example.demo.service.cashing.CashingService;
@@ -27,6 +25,9 @@ public class ArticleAspect {
     private final CashingService cashingService;
 
 
+    /**
+     * Unchecked cast will always return (List<Article>), because method ArticleService.findActualArticles returns List<Article>
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     @Around(value = "execution(* com.example.demo.service.ArticleService.findActualArticles(..))")
@@ -40,9 +41,7 @@ public class ArticleAspect {
         var articles = (List<Article>) pjp.proceed();
 
         cashingService.save(
-                PopularArticles.builder().articlesList(
-                        articles.stream().map(Article::getId).toList()
-                ).build()
+                cashingService.buildById(CashedId.popular, articles.stream().map(Article::getId).toList())
         );
 
         return articles;
@@ -67,9 +66,14 @@ public class ArticleAspect {
 
         var listLastFiveArticles = new ArrayList<>(articleDeque);
 
-        cashingService.save(LastFiveArticles.builder().articlesList(listLastFiveArticles).build());
+        cashingService.save(
+                cashingService.buildById(CashedId.topFive, listLastFiveArticles)
+        );
     }
 
+    /**
+     * Unchecked cast will always return (List<Article>), because method ArticleService.findLastFiveArticles returns List<Article>
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     @Around(value = "execution(* com.example.demo.service.ArticleService.findLastFiveArticles(..))")
@@ -83,9 +87,7 @@ public class ArticleAspect {
         var articles = (List<Article>) pjp.proceed();
 
         cashingService.save(
-                LastFiveArticles.builder()
-                        .articlesList(articles.stream().map(Article::getId).toList())
-                        .build()
+                cashingService.buildById(CashedId.topFive, articles.stream().map(Article::getId).toList())
         );
 
         return articles;

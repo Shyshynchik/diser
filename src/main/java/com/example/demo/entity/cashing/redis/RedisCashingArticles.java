@@ -9,14 +9,11 @@ import org.springframework.data.redis.core.RedisHash;
 import java.util.List;
 
 @RedisHash(value = "ArticlesList")
-@ToString
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
+@Builder
 public class RedisCashingArticles implements CashingArticles {
 
     @Id
-    @Getter(AccessLevel.NONE)
     private CashedId id;
 
     private List<String> articlesList;

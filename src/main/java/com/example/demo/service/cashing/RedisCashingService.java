@@ -7,6 +7,7 @@ import com.example.demo.repositorie.redis.RedisArticlesListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,5 +24,10 @@ public class RedisCashingService implements CashingService {
     @Override
     public <T extends CashingArticles> void save(T cashingArticlesList) {
         redisArticlesListRepository.save((RedisCashingArticles) cashingArticlesList);
+    }
+
+    @Override
+    public CashingArticles buildById(CashedId cashedId, List<String> list) {
+        return RedisCashingArticles.builder().id(cashedId).articlesList(list).build();
     }
 }
