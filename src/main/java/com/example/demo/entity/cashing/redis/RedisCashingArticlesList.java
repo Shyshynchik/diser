@@ -1,5 +1,6 @@
 package com.example.demo.entity.cashing.redis;
 
+import com.example.demo.entity.Article;
 import com.example.demo.entity.cashing.CashedId;
 import com.example.demo.entity.cashing.CashingArticlesList;
 import jakarta.persistence.Id;

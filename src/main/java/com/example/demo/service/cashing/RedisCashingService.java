@@ -9,6 +9,8 @@ import com.example.demo.repositorie.redis.RedisArticlesListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,22 +22,38 @@ public class RedisCashingService implements CashingService {
     private final ArticleRepositoryJpa articleRepositoryJpa;
 
     @Override
-    public Optional<? extends CashingArticlesList> findById(CashedId cashedId) {
-        return redisArticlesListRepository.findById(cashedId);
+    public Optional<List<Article>> findById(CashedId cashedId) {
+        var data = redisArticlesListRepository.findById(cashedId);
+
+        return data.map(this::findArticlesByCash);
     }
 
     @Override
-    public <T extends CashingArticlesList> void save(T cashingArticlesList) {
-        redisArticlesListRepository.save((RedisCashingArticlesList) cashingArticlesList);
+    public void save(CashedId cashedId, List<Article> list) {
+        redisArticlesListRepository.save(RedisCashingArticlesList.builder().id(cashedId).articlesList(list.stream().map(Article::getId).toList()).build());
     }
 
     @Override
-    public CashingArticlesList buildById(CashedId cashedId, List<String> list) {
-        return RedisCashingArticlesList.builder().id(cashedId).articlesList(list).build();
+    public void updateCash(CashedId cashedId, Article article) {
+        var cashOpt = redisArticlesListRepository.findById(cashedId);
+
+        if (cashOpt.isEmpty()) {
+            return;
+        }
+
+        var cash = cashOpt.get();
+
+        var articleDeque = new ArrayDeque<>(cash.getArticlesList());
+
+        articleDeque.removeLast();
+        articleDeque.addFirst(article.getId());
+
+        cash.setArticlesList(new ArrayList<>(articleDeque));
+
+        redisArticlesListRepository.save(cash);
     }
 
-    @Override
-    public List<Article> findArticlesByCash(CashingArticlesList cash) {
+    private List<Article> findArticlesByCash(RedisCashingArticlesList cash) {
         return articleRepositoryJpa.findByIdInOrderByDateDesc(cash.getArticlesList());
     }
 

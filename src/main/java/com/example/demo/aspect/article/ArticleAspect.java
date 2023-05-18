@@ -35,38 +35,19 @@ public class ArticleAspect {
         var popularArticlesOpt = cashingService.findById(CashedId.popular);
 
         if (popularArticlesOpt.isPresent()) {
-            return articleService.findByIdInOrderByDateDesc(popularArticlesOpt.get().getArticlesList());
+            return popularArticlesOpt.get();
         }
 
         var articles = (List<Article>) pjp.proceed();
 
-        cashingService.save(
-                cashingService.buildById(CashedId.popular, articles.stream().map(Article::getId).toList())
-        );
+        cashingService.save(CashedId.popular, articles);
 
         return articles;
     }
 
     @AfterReturning(pointcut = "execution(* com.example.demo.service.ArticleService.save(..))", returning = "retVal")
     public void afterReturnSave(JoinPoint jp, Object retVal) {
-        var lastFiveArticlesOpt = cashingService.findById(CashedId.topFive);
-
-        if (lastFiveArticlesOpt.isEmpty()) {
-            return;
-        }
-
-        var article = (Article) retVal;
-
-        var lastFiveArticles = lastFiveArticlesOpt.get();
-
-        var articleDeque = new ArrayDeque<>(lastFiveArticles.getArticlesList());
-
-        articleDeque.removeLast();
-        articleDeque.addFirst(article.getId());
-
-        cashingService.save(
-                cashingService.buildById(CashedId.topFive, new ArrayList<>(articleDeque))
-        );
+        cashingService.updateCash(CashedId.topFive, (Article) retVal);
     }
 
     /**
@@ -76,17 +57,15 @@ public class ArticleAspect {
     @SuppressWarnings("unchecked")
     @Around(value = "execution(* com.example.demo.service.ArticleService.findLastFiveArticles(..))")
     public List<Article> aroundCallFindLastFiveArticles(ProceedingJoinPoint pjp) {
-        var lastFiveArticleRepository = cashingService.findById(CashedId.topFive);
+        var lastFiveArticles = cashingService.findById(CashedId.topFive);
 
-        if (lastFiveArticleRepository.isPresent()) {
-            return articleService.findByIdInOrderByDateDesc(lastFiveArticleRepository.get().getArticlesList());
+        if (lastFiveArticles.isPresent()) {
+            return lastFiveArticles.get();
         }
 
         var articles = (List<Article>) pjp.proceed();
 
-        cashingService.save(
-                cashingService.buildById(CashedId.topFive, articles.stream().map(Article::getId).toList())
-        );
+        cashingService.save(CashedId.topFive, articles);
 
         return articles;
     }

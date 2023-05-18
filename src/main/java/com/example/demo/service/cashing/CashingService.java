@@ -9,12 +9,9 @@ import java.util.Optional;
 
 public interface CashingService {
 
-    Optional<? extends CashingArticlesList> findById(CashedId cashedId);
+    Optional<List<Article>> findById(CashedId cashedId);
 
-    <T extends CashingArticlesList> void save(T cashingArticlesList);
+    void save(CashedId cashedId, List<Article> list);
 
-    CashingArticlesList buildById(CashedId cashedId, List<String> list);
-
-    <T extends CashingArticlesList> List<Article> findArticlesByCash(T cash);
-
+    void updateCash(CashedId cashedId, Article article);
 }
