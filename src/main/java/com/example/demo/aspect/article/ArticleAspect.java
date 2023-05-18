@@ -3,9 +3,10 @@ package com.example.demo.aspect.article;
 import com.example.demo.entity.Article;
 import com.example.demo.entity.redis.LastFiveArticles;
 import com.example.demo.entity.redis.PopularArticles;
-import com.example.demo.entity.redis.RedisIds;
+import com.example.demo.entity.redis.CashedId;
 import com.example.demo.repositorie.mysql.ArticleRepositoryJpa;
 import com.example.demo.repositorie.redis.RedisArticlesListRepository;
+import com.example.demo.service.cashing.CashingService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
@@ -22,15 +23,16 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ArticleAspect {
 
-    private final RedisArticlesListRepository redisArticlesListRepository;
     private final ArticleRepositoryJpa articleRepositoryJpa;
+
+    private final CashingService cashingService;
 
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
     @Around(value = "execution(* com.example.demo.service.ArticleService.findActualArticles(..))")
     public List<Article> aroundCallFindActualArticles(ProceedingJoinPoint pjp) {
-        var popularArticlesOpt = redisArticlesListRepository.findById(RedisIds.popular);
+        var popularArticlesOpt = cashingService.findById(CashedId.popular);
 
         if (popularArticlesOpt.isPresent()) {
             return articleRepositoryJpa.findByIdInOrderByDateDesc(popularArticlesOpt.get().getArticlesList());
@@ -38,7 +40,7 @@ public class ArticleAspect {
 
         var articles = (List<Article>) pjp.proceed();
 
-        redisArticlesListRepository.save(
+        cashingService.save(
                 PopularArticles.builder().articlesList(
                         articles.stream().map(Article::getId).toList()
                 ).build()
@@ -49,7 +51,7 @@ public class ArticleAspect {
 
     @AfterReturning(pointcut = "execution(* com.example.demo.service.ArticleService.save(..))", returning = "retVal")
     public void afterReturnSave(JoinPoint jp, Object retVal) {
-        var lastFiveArticlesOpt = redisArticlesListRepository.findById(RedisIds.topFive);
+        var lastFiveArticlesOpt = cashingService.findById(CashedId.topFive);
 
         if (lastFiveArticlesOpt.isEmpty()) {
             return;
@@ -64,16 +66,16 @@ public class ArticleAspect {
         articleDeque.removeLast();
         articleDeque.addFirst(article.getId());
 
-        var test = new ArrayList<>(articleDeque);
+        var listLastFiveArticles = new ArrayList<>(articleDeque);
 
-        redisArticlesListRepository.save(LastFiveArticles.builder().articlesList(test).build());
+        cashingService.save(LastFiveArticles.builder().articlesList(listLastFiveArticles).build());
     }
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
     @Around(value = "execution(* com.example.demo.service.ArticleService.findLastFiveArticles(..))")
     public List<Article> aroundCallFindLastFiveArticles(ProceedingJoinPoint pjp) {
-        var lastFiveArticleRepository = redisArticlesListRepository.findById(RedisIds.topFive);
+        var lastFiveArticleRepository = cashingService.findById(CashedId.topFive);
 
         if (lastFiveArticleRepository.isPresent()) {
             return articleRepositoryJpa.findByIdInOrderByDateDesc(lastFiveArticleRepository.get().getArticlesList());
@@ -81,7 +83,7 @@ public class ArticleAspect {
 
         var articles = (List<Article>) pjp.proceed();
 
-        redisArticlesListRepository.save(
+        cashingService.save(
                 LastFiveArticles.builder()
                         .articlesList(articles.stream().map(Article::getId).toList())
                         .build()

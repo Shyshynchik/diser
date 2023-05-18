@@ -1,6 +1,5 @@
 package com.example.demo.entity.redis;
 
-import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -10,11 +9,11 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-public class PopularArticles extends RedisArticlesList {
+public class PopularArticles extends CashingArticlesList {
 
     @Builder
     public PopularArticles(List<String> articlesList) {
-        super(RedisIds.popular, articlesList);
+        super(CashedId.popular, articlesList);
     }
 
 

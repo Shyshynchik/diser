@@ -1,6 +1,6 @@
 package com.example.demo.entity.redis;
 
-public enum RedisIds {
+public enum CashedId {
 
     popular,
     topFive

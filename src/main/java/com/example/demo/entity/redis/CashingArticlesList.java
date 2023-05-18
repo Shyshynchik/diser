@@ -11,11 +11,11 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class RedisArticlesList {
+public class CashingArticlesList {
 
     @Id
     @Getter(AccessLevel.NONE)
-    private RedisIds id;
+    private CashedId id;
 
     private List<String> articlesList;
 
