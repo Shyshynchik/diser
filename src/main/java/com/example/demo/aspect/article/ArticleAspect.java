@@ -2,7 +2,6 @@ package com.example.demo.aspect.article;
 
 import com.example.demo.entity.Article;
 import com.example.demo.entity.cashing.CashedId;
-import com.example.demo.repositorie.mysql.ArticleRepositoryJpa;
 import com.example.demo.service.ArticleService;
 import com.example.demo.service.cashing.CashingService;
 import lombok.RequiredArgsConstructor;
@@ -65,10 +64,8 @@ public class ArticleAspect {
         articleDeque.removeLast();
         articleDeque.addFirst(article.getId());
 
-        var listLastFiveArticles = new ArrayList<>(articleDeque);
-
         cashingService.save(
-                cashingService.buildById(CashedId.topFive, listLastFiveArticles)
+                cashingService.buildById(CashedId.topFive, new ArrayList<>(articleDeque))
         );
     }
 
