@@ -1,5 +1,6 @@
-package com.example.demo.entity.redis;
+package com.example.demo.entity.cashing.redis;
 
+import com.example.demo.entity.cashing.CashedId;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-public class PopularArticles extends CashingArticlesList {
+public class PopularArticles extends RedisCashingArticles {
 
     @Builder
     public PopularArticles(List<String> articlesList) {

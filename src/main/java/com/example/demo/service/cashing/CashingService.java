@@ -1,14 +1,14 @@
 package com.example.demo.service.cashing;
 
-import com.example.demo.entity.redis.CashedId;
-import com.example.demo.entity.redis.CashingArticlesList;
+import com.example.demo.entity.cashing.CashingArticles;
+import com.example.demo.entity.cashing.CashedId;
 
 import java.util.Optional;
 
-public interface CashingService<T, ID> {
+public interface CashingService {
 
-    Optional<T> findById(ID cashedId);
+    Optional<? extends CashingArticles> findById(CashedId cashedId);
 
-    void save(T cashingArticlesList);
+    <T extends CashingArticles> void save(T cashingArticlesList);
 
 }

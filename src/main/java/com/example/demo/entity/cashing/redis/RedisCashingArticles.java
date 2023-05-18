@@ -1,5 +1,7 @@
-package com.example.demo.entity.redis;
+package com.example.demo.entity.cashing.redis;
 
+import com.example.demo.entity.cashing.CashedId;
+import com.example.demo.entity.cashing.CashingArticles;
 import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
@@ -11,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CashingArticlesList {
+public class RedisCashingArticles implements CashingArticles {
 
     @Id
     @Getter(AccessLevel.NONE)

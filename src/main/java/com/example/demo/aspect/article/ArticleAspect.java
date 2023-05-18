@@ -1,11 +1,10 @@
 package com.example.demo.aspect.article;
 
 import com.example.demo.entity.Article;
-import com.example.demo.entity.redis.LastFiveArticles;
-import com.example.demo.entity.redis.PopularArticles;
-import com.example.demo.entity.redis.CashedId;
+import com.example.demo.entity.cashing.redis.LastFiveArticles;
+import com.example.demo.entity.cashing.redis.PopularArticles;
+import com.example.demo.entity.cashing.CashedId;
 import com.example.demo.repositorie.mysql.ArticleRepositoryJpa;
-import com.example.demo.repositorie.redis.RedisArticlesListRepository;
 import com.example.demo.service.cashing.CashingService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

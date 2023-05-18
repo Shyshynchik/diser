@@ -1,4 +1,4 @@
-package com.example.demo.entity.redis;
+package com.example.demo.entity.cashing;
 
 public enum CashedId {
 
