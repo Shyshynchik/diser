@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface CommentRepositoryJpa extends CrudRepository<Comment, UUID> {
+public interface CommentRepositoryJpa extends CrudRepository<Comment, String> {
 }

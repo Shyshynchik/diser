@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ArticleRepositoryRedis extends CrudRepository<Article, UUID> {
+public interface ArticleRepositoryRedis extends CrudRepository<Article, String> {
 }

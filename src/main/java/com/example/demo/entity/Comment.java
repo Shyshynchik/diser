@@ -20,7 +20,7 @@ public class Comment implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "comment_id")
-    private UUID id;
+    private String id;
 
     @Column(name = "author_id")
     private UUID authorId;

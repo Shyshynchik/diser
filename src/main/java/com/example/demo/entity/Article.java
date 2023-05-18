@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.redis.core.RedisHash;
@@ -7,7 +8,6 @@ import org.springframework.data.redis.core.RedisHash;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @RedisHash("Article")
 @Data
@@ -16,13 +16,13 @@ import java.util.UUID;
 public class Article implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "article_id")
-    private UUID id;
+    private String id;
 
     @Column(name = "title")
     private String title;
 
+    @JsonIgnore
     @Column(name = "text")
     private String text;
 
@@ -32,6 +32,7 @@ public class Article implements Serializable {
     @Column(name = "views")
     private int views;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "article")
     private List<Comment> comments;
 
