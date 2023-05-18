@@ -12,4 +12,6 @@ public interface ArticleService {
 
     List<Article> findLastFiveArticles();
 
+    List<Article> findByIdInOrderByDateDesc(List<String> ids);
+
 }

@@ -28,5 +28,10 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepositoryJpa.findLastFiveArticles();
     }
 
+    @Override
+    public List<Article> findByIdInOrderByDateDesc(List<String> ids) {
+        return articleRepositoryJpa.findByIdInOrderByDateDesc(ids);
+    }
+
 
 }

@@ -3,6 +3,7 @@ package com.example.demo.aspect.article;
 import com.example.demo.entity.Article;
 import com.example.demo.entity.cashing.CashedId;
 import com.example.demo.repositorie.mysql.ArticleRepositoryJpa;
+import com.example.demo.service.ArticleService;
 import com.example.demo.service.cashing.CashingService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -20,7 +21,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ArticleAspect {
 
-    private final ArticleRepositoryJpa articleRepositoryJpa;
+    private final ArticleService articleService;
 
     private final CashingService cashingService;
 
@@ -35,7 +36,7 @@ public class ArticleAspect {
         var popularArticlesOpt = cashingService.findById(CashedId.popular);
 
         if (popularArticlesOpt.isPresent()) {
-            return articleRepositoryJpa.findByIdInOrderByDateDesc(popularArticlesOpt.get().getArticlesList());
+            return articleService.findByIdInOrderByDateDesc(popularArticlesOpt.get().getArticlesList());
         }
 
         var articles = (List<Article>) pjp.proceed();
@@ -81,7 +82,7 @@ public class ArticleAspect {
         var lastFiveArticleRepository = cashingService.findById(CashedId.topFive);
 
         if (lastFiveArticleRepository.isPresent()) {
-            return articleRepositoryJpa.findByIdInOrderByDateDesc(lastFiveArticleRepository.get().getArticlesList());
+            return articleService.findByIdInOrderByDateDesc(lastFiveArticleRepository.get().getArticlesList());
         }
 
         var articles = (List<Article>) pjp.proceed();
