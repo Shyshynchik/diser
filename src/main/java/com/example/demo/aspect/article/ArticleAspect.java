@@ -2,28 +2,27 @@ package com.example.demo.aspect.article;
 
 import com.example.demo.entity.Article;
 import com.example.demo.entity.cashing.CashedId;
-import com.example.demo.service.ArticleService;
 import com.example.demo.service.cashing.CashingService;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
 @Aspect
-@RequiredArgsConstructor
 public class ArticleAspect {
-
-    private final ArticleService articleService;
 
     private final CashingService cashingService;
 
+    public ArticleAspect(@Qualifier("templateService") CashingService cashingService) {
+        this.cashingService = cashingService;
+    }
 
     /**
      * Unchecked cast will always return (List<Article>), because method ArticleService.findActualArticles returns List<Article>

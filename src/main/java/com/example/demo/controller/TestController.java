@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Article;
+import com.example.demo.model.ArticlesDto;
 import com.example.demo.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
@@ -19,19 +20,35 @@ public class TestController {
     private final ArticleService articleService;
 
     @GetMapping("/test/actual")
-    public @ResponseBody ResponseEntity<List<Article>> getActual() {
+    public @ResponseBody ResponseEntity<ArticlesDto> getActual() {
 
         var articles = articleService.findActualArticles();
 
-        return ResponseEntity.ok(articles);
+        var articlesDtoList = new ArrayList<ArticlesDto.ArticleDto>();
+
+        for (var article: articles) {
+            articlesDtoList.add(
+                    ArticlesDto.ArticleDto.builder().title(article.getTitle()).text(article.getText()).build()
+            );
+        }
+
+        return ResponseEntity.ok(ArticlesDto.builder().articleDtos(articlesDtoList).build());
     }
 
     @GetMapping("/test/last-five")
-    public @ResponseBody ResponseEntity<List<Article>> getTopFive() {
+    public @ResponseBody ResponseEntity<ArticlesDto> getTopFive() {
 
         var articles = articleService.findLastFiveArticles();
 
-        return ResponseEntity.ok(articles);
+        var articlesDtoList = new ArrayList<ArticlesDto.ArticleDto>();
+
+        for (var article: articles) {
+            articlesDtoList.add(
+                    ArticlesDto.ArticleDto.builder().title(article.getTitle()).text(article.getText()).build()
+            );
+        }
+
+        return ResponseEntity.ok(ArticlesDto.builder().articleDtos(articlesDtoList).build());
     }
 
     @GetMapping("/test/save")
